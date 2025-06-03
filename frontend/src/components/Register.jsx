@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const Register = () => {
     username: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -46,6 +48,7 @@ const Register = () => {
         });
         // Reset the file input value manually (optional but recommended)
         e.target.reset();
+        navigate("/");
       } else {
         alert(result.error);
       }
@@ -129,7 +132,7 @@ const Register = () => {
             type="submit"
             className="mt-4 absolute bottom-10 right-260 bg-white text-black px-4 py-2 rounded hover:bg-gray-300 transition"
           >
-            Register
+            Submit
           </button>
         </form>
       </div>

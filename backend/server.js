@@ -55,7 +55,41 @@ app.post("/register", upload.single("image"), async (req, res) => {
   );
 });
 
-// Add this route after your existing routes
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const sql = `SELECT * FROM users WHERE username = ?`;
+  db.query(sql, [username], async (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    const user = results[0];
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    // Format birthday and build image URL
+    const imageURL = user.image
+      ? `http://localhost:5000/uploads/${user.image}`
+      : null;
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      birthday: user.birthday,
+      address: user.address,
+      image: imageURL,
+    });
+  });
+});
 
 // Get user info by username
 app.get("/user/:username", (req, res) => {

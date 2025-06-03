@@ -1,68 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-const Info = ({ username }) => {
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const Info = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // Helper function to calculate age from birthday string (YYYY-MM-DD)
-  const calculateAge = (birthday) => {
-    if (!birthday) return "";
-    const birthDate = new Date(birthday);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+  const calculateAge = (birthdate) => {
+    const birth = new Date(birthdate);
+    const now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    const m = now.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) {
       age--;
     }
     return age;
   };
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/user/${username}`);
-        const data = await res.json();
-        if (res.ok) {
-          setUserInfo(data);
-          setError(null);
-        } else {
-          setError(data.error || "Failed to fetch user info");
-        }
-      } catch (err) {
-        setError("Failed to fetch user info");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserInfo();
-  }, [username]);
-
-  if (loading) return <p>Loading user info...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!userInfo) return null;
+  if (!user) return <div>No user info found.</div>;
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center text-black bg-white p-6">
-      {/* Image top right */}
-      {userInfo.image && (
-        <img
-          src={userInfo.image}
-          alt={`${userInfo.name}'s profile`}
-          className="absolute top-6 right-6 w-32 h-32 object-cover rounded-full border border-gray-300"
-        />
-      )}
-
-      {/* Info in the center */}
-      <div className="text-center max-w-md space-y-4">
-        <h1 className="text-3xl font-bold">{userInfo.name}</h1>
-        <p className="text-xl">
-          <strong>Age:</strong> {calculateAge(userInfo.birthday)}
-        </p>
-        <p className="text-xl">
-          <strong>Address:</strong> {userInfo.address}
-        </p>
+    <div className="min-h-screen flex items-center">
+      <div className="absolute top-15 right-10">
+        {user.image && (
+          <img
+            src={user.image}
+            alt="User"
+            className="w-32 h-32 object-cover border border-black"
+          />
+        )}
+      </div>
+      <div className="absolute left-150">
+        <h2 className="text-xl font-bold mb-4">{user.name}</h2>
+        <p className="text-xl">{calculateAge(user.birthday)} years old</p>
+        <p className="text-xl">{user.address}</p>
       </div>
     </div>
   );
