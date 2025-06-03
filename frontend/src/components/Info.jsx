@@ -1,6 +1,7 @@
 import React from "react";
-
+import { useNavigate } from "react-router-dom";
 const Info = () => {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const calculateAge = (birthdate) => {
@@ -12,6 +13,11 @@ const Info = () => {
       age--;
     }
     return age;
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user"); // clear user info from storage
+    navigate("/"); // redirect to login page
   };
 
   if (!user) return <div>No user info found.</div>;
@@ -31,6 +37,12 @@ const Info = () => {
         <h2 className="text-xl font-bold mb-4">{user.name}</h2>
         <p className="text-xl">{calculateAge(user.birthday)} years old</p>
         <p className="text-xl">{user.address}</p>
+        <button
+          onClick={handleLogout}
+          className="mt-6 px-4 py-2 text-black rounded "
+        >
+          Logout
+        </button>
       </div>
     </div>
   );
